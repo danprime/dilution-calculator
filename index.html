@@ -213,6 +213,7 @@
         </div>
     </div>
 
+    <script src="ppm-constant.js"></script>
     <script>
         function calculateDilution() {
             // Get input values
@@ -273,6 +274,22 @@
         document.addEventListener('keyup', function(event) {
             if (event.key === 'Enter') {
                 calculateDilution();
+            }
+        });
+
+        // Double-click on Initial Water PPM label to use latest PPM
+        document.addEventListener('DOMContentLoaded', function() {
+            var ppmLabel = document.querySelector('label[for="initialPPM"]');
+            var ppmInput = document.getElementById('initialPPM');
+            if (ppmLabel && ppmInput) {
+                ppmLabel.title = 'Double-click to use latest PPM';
+                ppmLabel.style.cursor = 'pointer';
+                ppmLabel.ondblclick = function() {
+                    if (typeof LATEST_PPM !== 'undefined') {
+                        ppmInput.value = LATEST_PPM;
+                        ppmInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                };
             }
         });
 
