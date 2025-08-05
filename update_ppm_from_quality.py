@@ -1,10 +1,13 @@
 import subprocess
+import os
 import sys
 
 # Call get_water_quality_value.py and capture its output
 try:
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    child_script = os.path.join(script_dir, 'get_water_quality_value.py')
     result = subprocess.run([
-        sys.executable, 'get_water_quality_value.py'
+        sys.executable, child_script
     ], capture_output=True, text=True, check=True)
     ppm_value = result.stdout.strip()
 except Exception as e:
@@ -13,8 +16,10 @@ except Exception as e:
 
 # Call update_ppm.py with the value
 try:
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    child_script = os.path.join(script_dir, 'update_ppm.py')
     subprocess.run([
-        sys.executable, 'update_ppm.py', ppm_value
+        sys.executable, child_script, ppm_value
     ], check=True)
     print(f"Updated LATEST_PPM to {ppm_value} using update_ppm.py")
 except Exception as e:

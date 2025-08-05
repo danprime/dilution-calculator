@@ -1,4 +1,5 @@
 import sys
+import os
 import re
 
 if len(sys.argv) != 2:
@@ -13,7 +14,8 @@ except ValueError:
     print("PPM value must be a number.")
     sys.exit(1)
 
-js_file = "ppm-constant.js"
+script_dir = os.path.dirname(os.path.abspath(__file__))
+js_file = os.path.join(script_dir, "ppm-constant.js")
 pattern = re.compile(r"(const LATEST_PPM\s*=\s*)[\d.]+(;)")
 
 with open(js_file, "r") as f:
