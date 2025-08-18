@@ -277,14 +277,32 @@
         document.addEventListener('DOMContentLoaded', function() {
             var ppmLabel = document.querySelector('label[for="initialPPM"]');
             var ppmInput = document.getElementById('initialPPM');
+            var errorMsgId = 'ppm-fetch-error-msg';
             if (ppmLabel && ppmInput) {
                 ppmLabel.title = 'Double-click to use latest PPM';
                 ppmLabel.style.cursor = 'pointer';
                 ppmLabel.ondblclick = function() {
-                    if (typeof LATEST_PPM !== 'undefined') {
-                        ppmInput.value = LATEST_PPM;
-                        ppmInput.dispatchEvent(new Event('input', { bubbles: true }));
-                    }
+                    // Remove any previous error message
+                    var oldError = document.getElementById(errorMsgId);
+                    if (oldError) oldError.remove();
+                    fetch('https://danprime.github.io/dilution-calculator/ppm-constant.json')
+                        .then(function(response) {
+                            if (!response.ok) throw new Error('Network response was not ok');
+                            return response.json();
+                        })
+                        .then(function(data) {
+                            if (typeof data.latest_ppm !== 'number') throw new Error('Invalid JSON structure');
+                            ppmInput.value = data.latest_ppm;
+                            ppmInput.dispatchEvent(new Event('input', { bubbles: true }));
+                        })
+                        .catch(function() {
+                            var errorSpan = document.createElement('span');
+                            errorSpan.id = errorMsgId;
+                            errorSpan.textContent = 'Failed to get latest PPM';
+                            errorSpan.style.color = 'red';
+                            errorSpan.style.marginLeft = '10px';
+                            ppmLabel.parentNode.insertBefore(errorSpan, ppmLabel.nextSibling);
+                        });
                 };
             }
         });
