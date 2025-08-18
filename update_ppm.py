@@ -1,6 +1,7 @@
 import sys
 import os
 import re
+import json
 
 if len(sys.argv) != 2:
     print("Usage: python update_ppm.py <new_ppm_value>")
@@ -16,7 +17,9 @@ except ValueError:
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 js_file = os.path.join(script_dir, "ppm-constant.js")
+json_file = os.path.join(script_dir, "ppm-constant.json")
 pattern = re.compile(r"(const LATEST_PPM\s*=\s*)[\d.]+(;)")
+
 
 with open(js_file, "r") as f:
     content = f.read()
@@ -30,5 +33,8 @@ if count == 0:
 with open(js_file, "w") as f:
     f.write(new_content)
 
-print(f"Updated LATEST_PPM to {new_ppm} in {js_file}")
+json_data = { "latest_ppm": str(new_ppm) }
+with open(json_file, "w") as f:
+    json.dump(json_data, f, indent=2)
 
+print(f"Updated LATEST_PPM to {new_ppm} in {js_file} and {json_file}")
